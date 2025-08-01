@@ -1,0 +1,188 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum BudgetPeriod {
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+enum GroupRole {
+  ADMIN
+  MEMBER
+}
+
+model User {
+  id                  String       @id @default(uuid())
+  clerkId             String       @unique
+  email               String       @unique
+  name                String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  createdTransactions Transaction[] @relation("CreatedByUser") // Formerly 'transactions'
+  paidForTransactions Transaction[] @relation("PaidByUser")    // The missing field
+  budgets             Budget[]
+  groups              GroupMember[]
+  categories          Category[]
+  splits              Split[]
+  notifications       Notification[]
+  auditLogs           AuditLog[]
+  paidSettlements     Settlement[] @relation("PaidSettlements")
+  receivedSettlements Settlement[] @relation("ReceivedSettlements")
+}
+
+model Transaction {
+  id              String          @id @default(uuid())
+  userId          String // The user who created the record
+  user            User            @relation("CreatedByUser", fields: [userId], references: [id])
+  paidById        String // The user who actually paid
+  paidBy          User            @relation(name: "PaidByUser", fields: [paidById], references: [id])
+  groupId         String?
+  group           Group?          @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  categoryId      String
+  category        Category        @relation(fields: [categoryId], references: [id])
+  amount          Decimal
+  description     String?
+  transactionType TransactionType
+  date            DateTime        @default(now())
+  isRecurring     Boolean         @default(false)
+  recurrenceRule  String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  splits          Split[]
+
+  @@index([userId])
+  @@index([paidById])
+  @@index([groupId])
+  @@index([categoryId])
+}
+
+model Group {
+  id           String        @id @default(uuid())
+  name         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  members      GroupMember[]
+  transactions Transaction[]
+  settlements  Settlement[]
+}
+
+model GroupMember {
+  userId   String
+  groupId  String
+  role     GroupRole @default(MEMBER)
+  joinedAt DateTime  @default(now())
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group    Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([userId, groupId])
+}
+
+model Split {
+  id            String    @id @default(uuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount        Decimal
+  settledAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([transactionId])
+}
+
+model Budget {
+  id         String       @id @default(uuid())
+  userId     String
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  amount     Decimal
+  period     BudgetPeriod
+  startDate  DateTime
+  endDate    DateTime
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  @@unique([userId, categoryId, period, startDate])
+  @@index([userId])
+}
+
+model Category {
+  id           String        @id @default(uuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  type         CategoryType
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+model Settlement {
+  id        String   @id @default(uuid())
+  payerId   String
+  payer     User     @relation("PaidSettlements", fields: [payerId], references: [id])
+  payeeId   String
+  payee     User     @relation("ReceivedSettlements", fields: [payeeId], references: [id])
+  groupId   String?
+  group     Group?   @relation(fields: [groupId], references: [id])
+  amount    Decimal
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@index([payerId])
+  @@index([payeeId])
+  @@index([groupId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  target    String
+  metadata  Json
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
