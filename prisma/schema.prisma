@@ -35,22 +35,23 @@ enum GroupRole {
 }
 
 model User {
-  id                  String       @id @default(uuid())
-  clerkId             String       @unique
-  email               String       @unique
+  id                  String         @id @default(uuid())
+  clerkId             String         @unique
+  email               String         @unique
   name                String?
-  createdAt           DateTime     @default(now())
-  updatedAt           DateTime     @updatedAt
-  createdTransactions Transaction[] @relation("CreatedByUser") // Formerly 'transactions'
-  paidForTransactions Transaction[] @relation("PaidByUser")    // The missing field
+  username            String         @unique
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  createdTransactions Transaction[]  @relation("CreatedByUser") // Formerly 'transactions'
+  paidForTransactions Transaction[]  @relation("PaidByUser") // The missing field
   budgets             Budget[]
   groups              GroupMember[]
   categories          Category[]
   splits              Split[]
   notifications       Notification[]
   auditLogs           AuditLog[]
-  paidSettlements     Settlement[] @relation("PaidSettlements")
-  receivedSettlements Settlement[] @relation("ReceivedSettlements")
+  paidSettlements     Settlement[]   @relation("PaidSettlements")
+  receivedSettlements Settlement[]   @relation("ReceivedSettlements")
 }
 
 model Transaction {
@@ -101,15 +102,15 @@ model GroupMember {
 }
 
 model Split {
-  id            String    @id @default(uuid())
+  id            String      @id @default(uuid())
   transactionId String
   transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
   userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   amount        Decimal
   settledAt     DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   @@index([userId])
   @@index([transactionId])
