@@ -5,11 +5,11 @@ import { useSignIn } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import {  useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import z from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import {
-    Form,
+  Form,
   FormControl,
   FormField,
   FormItem,
@@ -23,6 +23,7 @@ export default function SignInForm() {
   const { isLoaded, signIn, setActive } = useSignIn();
   const router = useRouter();
   const [error, setError] = useState("");
+  const [isGoogleLoading , setIsGoogleLoading] = useState(false)
 
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -56,6 +57,28 @@ export default function SignInForm() {
       console.error(JSON.stringify(err, null, 2));
       setError(err.errors[0]?.longMessage || "Invalid email or password.");
     }
+  };
+
+  const handleGoogleSignIn = async () => {
+    if (!isLoaded || !signIn) return;
+
+    setIsGoogleLoading(true)
+
+    try { 
+      await signIn.authenticateWithRedirect({
+        strategy: "oauth_google",
+        redirectUrl: "/sso-callback",
+        redirectUrlComplete: "/",
+      });
+    } catch (err: any) {
+      console.error(JSON.stringify(err, null, 2));
+      setError(
+        err.errors[0]?.longMessage || "An error occurred during Google sign-in."
+      );
+    }finally{
+      setIsGoogleLoading(false)
+    }
+
   };
 
   return (
@@ -109,6 +132,27 @@ export default function SignInForm() {
             </form>
           </Form>
 
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={handleGoogleSignIn}
+          >
+            {isGoogleLoading ?  "Loading ...." : "Sign in with Google"}
+            
+          </Button>
+
+          <div id="clerk-captcha"  data-cl-theme="dark" data-cl-size="flexible"></div>
           {error && (
             <p className="mt-4 text-center text-sm text-red-600">{error}</p>
           )}

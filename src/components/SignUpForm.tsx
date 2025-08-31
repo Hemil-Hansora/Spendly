@@ -70,6 +70,23 @@ export default function SignUpForm() {
     }
   };
 
+  const handleGoogleSignUp = async () => {
+    if (!isLoaded || !signUp) return;
+
+    try {
+      await signUp.authenticateWithRedirect({
+        strategy: "oauth_google",
+        redirectUrl: "/sso-callback",
+        redirectUrlComplete: "/",
+      });
+    } catch (err: any) {
+      console.error(JSON.stringify(err, null, 2));
+      setError(
+        err.errors[0]?.longMessage || "An error occurred during Google sign-up."
+      );
+    }
+  };
+
   const onVerify = async (data: z.infer<typeof verificationSchema>) => {
     if (!isLoaded || !signUp) return;
 
@@ -106,65 +123,88 @@ export default function SignUpForm() {
         </CardHeader>
         <CardContent>
           {!pendingVerification && (
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="John Doe" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="name@example.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="********"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={form.formState.isSubmitting}
+            <>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
                 >
-                  {form.formState.isSubmitting
-                    ? "Creating..."
-                    : "Create Account"}
-                </Button>
-              </form>
-            </Form>
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="John Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email address</FormLabel>
+                        <FormControl>
+                          <Input placeholder="name@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="********"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={form.formState.isSubmitting}
+                  >
+                    {form.formState.isSubmitting
+                      ? "Creating..."
+                      : "Create Account"}
+                  </Button>
+                </form>
+              </Form>
+
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className=" px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleGoogleSignUp}
+              >
+                Sign up with Google
+              </Button>
+
+              <div id="clerk-captcha"  data-cl-theme="dark" data-cl-size="flexible" ></div>
+            </>
           )}
 
           {pendingVerification && (
