@@ -27,23 +27,22 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <html lang="en">
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          ><main>
-            {children}
-          </main>
-          <Toaster richColors position="bottom-right" />
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <main>{children}</main>
 
-          </body>
-        </html>
-      </ThemeProvider>
+            <Toaster richColors position="bottom-right" />
+          </ThemeProvider>
+        </body>
+      </html>
     </ClerkProvider>
   );
 }
