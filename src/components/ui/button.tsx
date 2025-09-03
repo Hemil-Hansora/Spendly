@@ -15,7 +15,7 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-xl shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)]",
         ghost: "hover:bg-accent hover:text-accent-foreground rounded-xl",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "hero-gradient text-white hover:scale-[1.02] rounded-xl shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-large)] border-0",
+        hero: "hero-gradient text-muted hover:scale-[1.02] rounded-xl shadow-[var(--shadow-medium)] hover:shadow-[var(--shadow-large)] border-0",
         financial: "primary-gradient text-white hover:opacity-90 rounded-xl shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)] border-0",
         success: "secondary-gradient text-white hover:opacity-90 rounded-xl shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-medium)] border-0",
         card: "financial-card hover:shadow-[var(--shadow-medium)] text-card-foreground border-border",

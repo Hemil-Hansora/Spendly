@@ -2,7 +2,7 @@ import { CTASection } from "@/components/landing/CTASection";
 import { FeatureSection } from "@/components/landing/FeatureSection";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { StatsSection } from "@/components/landing/StatsSection";
-import SignUpForm from "@/components/SignUpForm";
+
 import {
   SignedIn,
   SignedOut,
@@ -15,18 +15,10 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div>
-      <HeroSection/>
-      <FeatureSection/>
-      <StatsSection/>
-      <CTASection/>
-      <SignedOut>
-
-        <SignInButton />
-        <SignUpButton></SignUpButton>
-      </SignedOut>
-      <SignedIn>
-        <UserButton />
-      </SignedIn>
+      <HeroSection />
+      <FeatureSection />
+      <StatsSection />
+      <CTASection />
     </div>
   );
 }

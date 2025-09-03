@@ -53,7 +53,7 @@ export function LoginForm({ onSubmit, onGoogleSignIn, isLoading }: LoginFormProp
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto bg-gradient-to-br from-blue-500 to-purple-600 p-3 rounded-xl w-16 h-16 flex items-center justify-center">
+          <div className="mx-auto hero-gradient p-3 rounded-xl w-16 h-16 flex items-center justify-center">
             <Wallet className="h-8 w-8 text-white" />
           </div>
           <div>
@@ -126,9 +126,9 @@ export function LoginForm({ onSubmit, onGoogleSignIn, isLoading }: LoginFormProp
               
               <Button
                 type="submit"
-                variant="default"
+                variant="hero"
                 size="lg"
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                className="w-full hero-gradient text-muted "
                 disabled={isLoading}
               >
                 {isLoading ? (

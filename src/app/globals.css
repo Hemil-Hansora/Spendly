@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import '@clerk/themes/shadcn.css';
 
 /* ✅ Custom dark variant */
 @custom-variant dark (&:is(.dark *));
@@ -87,8 +88,8 @@
   --success: 158 64% 65%;
   --success-foreground: 216 20% 6%;
 
-  --border: 216 20% 15%;
-  --input: 216 20% 15%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
   --ring: 214 84% 70%;
 
   --sidebar-background: 0 0% 98%;

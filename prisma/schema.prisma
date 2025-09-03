@@ -83,11 +83,15 @@ model Transaction {
 model Group {
   id           String        @id @default(uuid())
   name         String
+  icon         String
+  inviteCode   String        @unique
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   members      GroupMember[]
   transactions Transaction[]
   settlements  Settlement[]
+
+  @@index([inviteCode])
 }
 
 model GroupMember {
